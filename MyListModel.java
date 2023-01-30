@@ -76,13 +76,26 @@ public class MyListModel extends DefaultListModel<String>
             str = pageReader.readLine();            //str will hold the first line of the html file
 
 
-            Matcher matcher = Pattern.compile("[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+").matcher(str);
+
+            String regExString = "[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+";
+            Pattern pattern;
+            Matcher matcher;
+            pattern = Pattern.compile(regExString);
+            matcher = pattern.matcher(str);
+            if(matcher.find())
+            {
+                System.out.println("Found " + str.substring(matcher.start(),matcher.end()) + " ");
+                matcher.region(matcher.end(), str.length());
+            }
+
+
+/*            Matcher matcher = Pattern.compile("[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+").matcher(str);
             if(matcher.find())
             {
                 grabTheEmailString = matcher.group();
                 System.out.println(grabTheEmailString + "\n");
             }
-
+ */
             while(str != null)
             {
             addElement(str);                        //add that string of text to the JList
