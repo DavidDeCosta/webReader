@@ -1,5 +1,6 @@
-import java.util.Enumeration;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLEditorKit;
@@ -32,16 +33,56 @@ public class TagHandler extends HTMLEditorKit.ParserCallback
 
  //       System.out.println("Found a tag: " + t);
 
-        Enumeration<?> attEnum;
-        attEnum = a.getAttributeNames();
-        while(attEnum.hasMoreElements())
+ //       System.out.println(a);
+
+        String mailTo = "mailto+";
+        Object attribute;
+        attribute = a.getAttribute(HTML.Attribute.HREF);
+        if(attribute != null)
         {
-            if(attEnum.nextElement().equals(HTML.Attribute.HREF))
+            if(attribute != mailTo )
             {
-            //    System.out.println(a.getAttribute(HTML.Attribute.HREF) + "\n");
-                listOfUrls.addElement((String) a.getAttribute(HTML.Attribute.HREF));
+                listOfUrls.addElement(attribute.toString());
+            }
+            else
+            {
+                
+            }
+       // listOfUrls.addElement(attribute.toString());
+        }
+
+        
+    }
+
+    @Override
+    public void handleText(char[] data,int po)
+    {
+        String str;
+        str = new String(data);
+
+        System.out.println(str);
+
+        String regExString = "[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})";
+        Pattern pattern;
+        Matcher matcher;
+        boolean done;
+        pattern = Pattern.compile(regExString);
+        matcher = pattern.matcher(str);
+
+        done = false;
+        while(!done)
+        {
+            if(matcher.find())
+            {
+              //  System.out.println("Found " + str.substring(matcher.start(),matcher.end()) + " ");
+                listOfEmailAdresses.add(str.substring(matcher.start(),matcher.end()));
+                matcher.region(matcher.end(), str.length());
+            }
+            else
+            {
+                done = true;
             }
         }
+
     }
-     
 }
