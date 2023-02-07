@@ -33,14 +33,12 @@ public class TagHandler extends HTMLEditorKit.ParserCallback
 
  //       System.out.println("Found a tag: " + t);
 
- //       System.out.println(a);
-
-        String mailTo = "mailto+";
+        String mailTo = (String) a.getAttribute(HTML.Attribute.HREF);          //to check if the href starts with mailto:
         Object attribute;
         attribute = a.getAttribute(HTML.Attribute.HREF);
         if(attribute != null)
         {
-            if(attribute != mailTo )
+            if(!mailTo.startsWith("mailto:") )
             {
                 listOfUrls.addElement(attribute.toString());
             }
@@ -48,7 +46,6 @@ public class TagHandler extends HTMLEditorKit.ParserCallback
             {
                 
             }
-       // listOfUrls.addElement(attribute.toString());
         }
 
         
@@ -60,7 +57,7 @@ public class TagHandler extends HTMLEditorKit.ParserCallback
         String str;
         str = new String(data);
 
-        System.out.println(str);
+//        System.out.println(str);
 
         String regExString = "[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})";
         Pattern pattern;

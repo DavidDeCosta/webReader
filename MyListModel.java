@@ -52,6 +52,8 @@ public class MyListModel extends DefaultListModel<String>
  
     }
 
+
+    //This method displays the HREF's and email adresses found on the page
     void displayElements()
     {
         Enumeration<String> forURLS = listOfUrls.elements();
