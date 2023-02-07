@@ -23,6 +23,8 @@ public class MyListModel extends DefaultListModel<String>
 
     String grabTheEmailString;
 
+    Vector<ExtractedData> vector = new Vector<ExtractedData>();    // my vector of objects 
+
     MyListModel()
     {
 
