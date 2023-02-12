@@ -8,7 +8,7 @@ import java.util.Vector;
 import javax.swing.*;
 import javax.swing.text.html.parser.ParserDelegator;
 
-public class MyListModel extends DefaultListModel<String>
+public class ListModel extends DefaultListModel<String>
 {
     URL url;
     BufferedReader pageReader;
@@ -17,21 +17,18 @@ public class MyListModel extends DefaultListModel<String>
     InputStreamReader isr;
     TagHandler tagHandler;
 
-    int testingnum = 0;
+
     Vector<String> listOfUrls = new Vector<String>();
     Vector<String> listOfEmailAdresses = new Vector<String>();
 
-    String grabTheEmailString;
-
-    Vector<ExtractedData> vector = new Vector<ExtractedData>();    // my vector of objects 
-
-    MyListModel()
+    ListModel()
     {
 
     }
 
-    MyListModel(String urlString)
+    ListModel(String urlString,Vector<String> listOfUrls )
     {
+        this.listOfUrls = listOfUrls;
         try 
         {
             url = new URL(urlString);            // construct a url object using the string from the textfield

@@ -1,9 +1,11 @@
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;    //for ActionListener
+import java.util.Enumeration;
+import java.util.Vector;
 
 
-public class MyFrame  extends JFrame
+public class TheMainFrame  extends JFrame
                     implements ActionListener
 {
     Toolkit toolkit;
@@ -13,10 +15,13 @@ public class MyFrame  extends JFrame
     JTextField textField;
     JPanel panel;
     JButton button;
-    MyListModel listModel;
+    ListModel listModel;
+
+    Vector<String> listOfUrls = new Vector<>();
+    Vector <ExtractedData> vectorOfExtractedData = new Vector<ExtractedData>();
 
 
-    MyFrame()
+    TheMainFrame()
     {
         addComponents();
         buildMainFrame();
@@ -35,7 +40,7 @@ public class MyFrame  extends JFrame
 
     void addComponents()
     {
-        listModel = new MyListModel();
+        listModel = new ListModel();
         displayList = new JList<>(listModel);
         scrollPane = new JScrollPane(displayList);
         add(scrollPane,BorderLayout.CENTER);
@@ -58,14 +63,10 @@ public class MyFrame  extends JFrame
     @Override
     public void actionPerformed(ActionEvent e) 
     {
-        String urlString;                       //to get URL text from textfield
 
         if(e.getActionCommand().equals(("Go!")))
         {
-            listModel.clear();                          //clear the old contents if any
-            urlString = textField.getText().trim();     //stores the text from the textfield
-            listModel = new MyListModel(urlString);     
-            displayList.setModel(listModel);
+            crawl();
         }
         else
         {
@@ -77,6 +78,25 @@ public class MyFrame  extends JFrame
 
     void crawl()
     {
-        
+        initilize();
+
+        Enumeration<String> forURLS = listOfUrls.elements();
+        while(forURLS.hasMoreElements())
+        {
+            listModel.clear();                               //clear the old contents if any
+            listModel = new ListModel(forURLS.nextElement(),listOfUrls);     
+            displayList.setModel(listModel);
+        }
+    }
+
+    void initilize()
+    {
+        String urlString;                       //to get URL text from textfield
+        listModel.clear();                          //clear the old contents if any
+        urlString = textField.getText().trim();     //stores the text from the textfield
+        listModel = new ListModel(urlString,listOfUrls);     
+        displayList.setModel(listModel);
+
+        listOfUrls.addElement(urlString);   //puts the seed in the list of URLS
     }
 }
