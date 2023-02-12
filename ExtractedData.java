@@ -11,4 +11,13 @@ public class ExtractedData
     {
 
     }
+    ExtractedData(String link)
+    {
+        this.link = link;
+    }
+    ExtractedData(String link, Vector<String> emailList)
+    {
+        this.link = link;
+        this.emailList = emailList;
+    }
 }

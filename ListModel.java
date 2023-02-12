@@ -1,10 +1,6 @@
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Enumeration;
-import java.util.Vector;
-
+import java.net.*;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.text.html.parser.ParserDelegator;
 
@@ -17,25 +13,25 @@ public class ListModel extends DefaultListModel<String>
     InputStreamReader isr;
     TagHandler tagHandler;
 
-
     Vector<String> listOfUrls = new Vector<String>();
     Vector<String> listOfEmailAdresses = new Vector<String>();
+    Vector <ExtractedData> vectorOfExtractedData = new Vector<ExtractedData>();
 
     ListModel()
     {
 
     }
 
-    ListModel(String urlString,Vector<String> listOfUrls )
+    ListModel(String urlString,Vector<String> listOfUrls, Vector <ExtractedData> vectorOfExtractedData  )
     {
         this.listOfUrls = listOfUrls;
+        this.vectorOfExtractedData = vectorOfExtractedData;
         try 
         {
             url = new URL(urlString);            // construct a url object using the string from the textfield
- //           readPage();
             urlConnection = url.openConnection();       //makes a connection to webpage
             isr = new InputStreamReader(urlConnection.getInputStream());           //isr reads the page
-            tagHandler = new TagHandler(urlString,listOfUrls,listOfEmailAdresses);  
+            tagHandler = new TagHandler(urlString,listOfUrls,listOfEmailAdresses,vectorOfExtractedData);  
             new ParserDelegator().parse(isr, tagHandler, true);
             displayElements();
             
@@ -50,7 +46,6 @@ public class ListModel extends DefaultListModel<String>
         }
  
     }
-
 
     //This method displays the HREF's and email adresses found on the page
     void displayElements()

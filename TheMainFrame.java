@@ -63,7 +63,6 @@ public class TheMainFrame  extends JFrame
     @Override
     public void actionPerformed(ActionEvent e) 
     {
-
         if(e.getActionCommand().equals(("Go!")))
         {
             crawl();
@@ -72,9 +71,7 @@ public class TheMainFrame  extends JFrame
         {
 
         }
-        
     }
-
 
     void crawl()
     {
@@ -84,7 +81,7 @@ public class TheMainFrame  extends JFrame
         while(forURLS.hasMoreElements())
         {
             listModel.clear();                               //clear the old contents if any
-            listModel = new ListModel(forURLS.nextElement(),listOfUrls);     
+            listModel = new ListModel(forURLS.nextElement(),listOfUrls, vectorOfExtractedData);     
             displayList.setModel(listModel);
         }
     }
@@ -94,9 +91,13 @@ public class TheMainFrame  extends JFrame
         String urlString;                       //to get URL text from textfield
         listModel.clear();                          //clear the old contents if any
         urlString = textField.getText().trim();     //stores the text from the textfield
-        listModel = new ListModel(urlString,listOfUrls);     
+        listModel = new ListModel(urlString,listOfUrls,vectorOfExtractedData);     
         displayList.setModel(listModel);
 
         listOfUrls.addElement(urlString);   //puts the seed in the list of URLS
+
+        ExtractedData extractedData;
+        extractedData = new ExtractedData(urlString);
+        vectorOfExtractedData.addElement(extractedData);    //puts our first HREF seed into our vector of Extracted data
     }
 }

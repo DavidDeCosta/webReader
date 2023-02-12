@@ -1,6 +1,5 @@
 import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.regex.*;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLEditorKit;
@@ -13,13 +12,15 @@ public class TagHandler extends HTMLEditorKit.ParserCallback
 
     Vector<String> listOfUrls;
     Vector<String> listOfEmailAdresses;
+    Vector <ExtractedData> vectorOfExtractedData = new Vector<ExtractedData>();
 
 
-    TagHandler(String baseDomain, Vector<String> listOfUrls,Vector<String> listOfEmailAdresses)
+    TagHandler(String baseDomain, Vector<String> listOfUrls,Vector<String> listOfEmailAdresses, Vector <ExtractedData> vectorOfExtractedData)
     {
         this.baseDomain = baseDomain;
         this.listOfUrls = listOfUrls;
         this.listOfEmailAdresses = listOfEmailAdresses;
+        this.vectorOfExtractedData = vectorOfExtractedData;
     }
 
     TagHandler()
@@ -31,24 +32,21 @@ public class TagHandler extends HTMLEditorKit.ParserCallback
     public void handleStartTag(Tag t, MutableAttributeSet a, int pos) 
     {
 
- //       System.out.println("Found a tag: " + t);
-
         String mailTo = (String) a.getAttribute(HTML.Attribute.HREF);          //to check if the href starts with mailto:
         Object attribute;
         attribute = a.getAttribute(HTML.Attribute.HREF);
         if(attribute != null)
         {
-            if(!mailTo.startsWith("mailto:") )
+            if(!mailTo.startsWith("mailto:") )                //makes sure the mailto's arent added to our urllist
             {
                 listOfUrls.addElement(attribute.toString());
             }
             else
             {
-                
+              //  listOfEmailAdresses.addElement(mailTo);
             }
         }
 
-        
     }
 
     @Override
@@ -56,16 +54,12 @@ public class TagHandler extends HTMLEditorKit.ParserCallback
     {
         String str;
         str = new String(data);
-
-//        System.out.println(str);
-
         String regExString = "[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})";
         Pattern pattern;
         Matcher matcher;
         boolean done;
         pattern = Pattern.compile(regExString);
         matcher = pattern.matcher(str);
-
         done = false;
         while(!done)
         {
@@ -80,6 +74,5 @@ public class TagHandler extends HTMLEditorKit.ParserCallback
                 done = true;
             }
         }
-
     }
 }
