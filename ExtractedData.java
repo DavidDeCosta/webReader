@@ -38,4 +38,21 @@ public class ExtractedData
 
         return formattedString;
     }
+
+    void sortEmailList()
+    {
+        String temp;
+        for(int i = 0; i < emailList.size(); i++)
+        {
+            for(int j = 0; j < emailList.size(); j++)
+            {
+                if(emailList.get(i).compareTo(emailList.get(j)) < 0)
+                {
+                    temp = emailList.get(i);
+                    emailList.set(i, emailList.get(j));
+                    emailList.set(j, temp);
+                }
+            }
+        }
+    }
 }

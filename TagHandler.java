@@ -52,6 +52,7 @@ public class TagHandler extends HTMLEditorKit.ParserCallback
                     ExtractedData extractedData;
                     extractedData = new ExtractedData(attribute.toString(), passedInExtractedDataObject.link,distance);
                     vectorOfExtractedData.addElement(extractedData);
+                  //  sortVectorOfExtractedData();
                 }
             }
         }
@@ -60,8 +61,6 @@ public class TagHandler extends HTMLEditorKit.ParserCallback
         //  System.out.println("im in the else of the mailto forloop \n");         
         }
     }
-        
-    
 
     @Override
     public void handleText(char[] data,int po)
@@ -81,6 +80,7 @@ public class TagHandler extends HTMLEditorKit.ParserCallback
             if(matcher.find())
             {
                 passedInExtractedDataObject.emailList.add(str.substring(matcher.start(),matcher.end()));
+                passedInExtractedDataObject.sortEmailList();
                 System.out.println("Found Email: " + str.substring(matcher.start(),matcher.end()) +
                 " at the URL: " + passedInExtractedDataObject.link);
                 matcher.region(matcher.end(), str.length());
@@ -89,6 +89,23 @@ public class TagHandler extends HTMLEditorKit.ParserCallback
             else
             {
                 done = true;
+            }
+        }
+    }
+
+    void sortVectorOfExtractedData()
+    {
+        ExtractedData temp;
+        for(int i = 0; i < vectorOfExtractedData.size(); i++)
+        {
+            for(int j = 0; j < vectorOfExtractedData.size(); j++)
+            {
+                if(vectorOfExtractedData.get(i).link.compareTo(vectorOfExtractedData.get(j).link) < 0)
+                {
+                    temp = vectorOfExtractedData.get(i);
+                    vectorOfExtractedData.set(i, vectorOfExtractedData.get(j));
+                    vectorOfExtractedData.set(j, temp);
+                }
             }
         }
     }

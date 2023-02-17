@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 import java.util.Date;
 
 
@@ -30,9 +31,12 @@ public class TheMainFrame  extends JFrame
     TagHandler tagHandler;
     Vector <ExtractedData> vectorOfExtractedData = new Vector<ExtractedData>();
 
-    Date date;
-    long timeMilli;
-    boolean expansionTimeLimit = false;
+//    Date date;
+//    long timeMilli;
+//    boolean expansionTimeLimit = false;
+    long startTime;
+    long endTime;
+    long duration;
 
     TheMainFrame()
     {
@@ -77,8 +81,7 @@ public class TheMainFrame  extends JFrame
     {
         if(e.getActionCommand().equals(("Go!")))
         {
-            date = new Date();
-            timeMilli = date.getTime();
+            startTime = System.currentTimeMillis();      //start the timer
             crawl();
         }
         else
@@ -111,10 +114,11 @@ public class TheMainFrame  extends JFrame
         getData(testExtractedData);
         defaultListModel.addElement(testExtractedData);
         currPos++;
-        while( currPos <vectorOfExtractedData.size() && testExtractedData.distanceToSeed < 2)
+        while( (currPos <vectorOfExtractedData.size()) && (testExtractedData.distanceToSeed < 2) && (duration < TimeUnit.SECONDS.toMillis(8)))
         {
             testExtractedData = vectorOfExtractedData.get(currPos);
             getData(testExtractedData);
+            duration = endTime - startTime; //get the duration
             defaultListModel.addElement(testExtractedData);
             currPos++;
         }     
@@ -124,16 +128,51 @@ public class TheMainFrame  extends JFrame
     {
         try
         {
+            endTime = System.currentTimeMillis(); //stop the timer
             url = new URL(testExtracteData.link);
             urlConnection = url.openConnection();
             isr = new InputStreamReader(urlConnection.getInputStream());
             tagHandler = new TagHandler(testExtracteData,vectorOfExtractedData);  
             new ParserDelegator().parse(isr, tagHandler, true);
+
         }
         catch (MalformedURLException e) 
         {
         //    JOptionPane.showMessageDialog(null, "URL is malformed! " + url);
-            
+            try
+            {
+                endTime = System.currentTimeMillis(); //stop the timer
+                url = new URL("https://"+testExtracteData.link);
+                urlConnection = url.openConnection();
+                isr = new InputStreamReader(urlConnection.getInputStream());
+                tagHandler = new TagHandler(testExtracteData,vectorOfExtractedData);  
+                new ParserDelegator().parse(isr, tagHandler, true);
+            }
+            catch (MalformedURLException e1) 
+            {
+            //    JOptionPane.showMessageDialog(null, "URL is malformed! " + url);   
+            try
+            {
+                endTime = System.currentTimeMillis(); //stop the timer
+                url = new URL(testExtracteData.baseDomain+testExtracteData.link);
+                urlConnection = url.openConnection();
+                isr = new InputStreamReader(urlConnection.getInputStream());
+                tagHandler = new TagHandler(testExtracteData,vectorOfExtractedData);  
+                new ParserDelegator().parse(isr, tagHandler, true);
+            }
+            catch (MalformedURLException e2) 
+            {
+            //    JOptionPane.showMessageDialog(null, "URL is malformed! " + url);           
+            }
+            catch (IOException e2) 
+            {
+                e1.printStackTrace();
+            }        
+            }
+            catch (IOException e1) 
+            {
+                e1.printStackTrace();
+            }
         }
         catch (IOException e) 
         {
