@@ -1,7 +1,14 @@
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.text.html.parser.ParserDelegator;
+
 import java.awt.event.*;    //for ActionListener
-import java.util.Enumeration;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Vector;
 
 
@@ -10,14 +17,19 @@ public class TheMainFrame  extends JFrame
 {
     Toolkit toolkit;
     Dimension screenSize;
-    JList<String> displayList;
+    JList<ExtractedData> displayJList;
     JScrollPane scrollPane;
     JTextField textField;
     JPanel panel;
     JButton button;
-    ListModel listModel;
+    ListModel defaultListModel;
 
-    Vector<String> listOfUrls = new Vector<>();
+    URL url;
+    BufferedReader pageReader;
+    URLConnection urlConnection;
+    InputStreamReader isr;
+    TagHandler tagHandler;
+
     Vector <ExtractedData> vectorOfExtractedData = new Vector<ExtractedData>();
 
 
@@ -40,9 +52,9 @@ public class TheMainFrame  extends JFrame
 
     void addComponents()
     {
-        listModel = new ListModel();
-        displayList = new JList<>(listModel);
-        scrollPane = new JScrollPane(displayList);
+        defaultListModel = new ListModel();
+        displayJList = new JList(defaultListModel);
+        scrollPane = new JScrollPane(displayJList);
         add(scrollPane,BorderLayout.CENTER);
 
         textField = new JTextField();
@@ -73,31 +85,57 @@ public class TheMainFrame  extends JFrame
         }
     }
 
+    void initilize()
+    {
+        //Get the original Link and create an Extracted Data object out of it and add it to the list 
+        String urlString;
+        defaultListModel.clear();
+        urlString = textField.getText().trim();
+        ExtractedData extractedData;
+        extractedData = new ExtractedData(urlString,0);
+        vectorOfExtractedData.addElement(extractedData);   //add the first link to the vectorOfExtractedData
+    }
+
     void crawl()
     {
         initilize();
+        defaultListModel = new ListModel(vectorOfExtractedData);
+        displayJList.setModel(defaultListModel);
+        ExtractedData testExtractedData;
 
-        Enumeration<String> forURLS = listOfUrls.elements();
-        while(forURLS.hasMoreElements())
+        //Get the ExtractedData object out of the list to parse
+        int currPos = 0;
+        testExtractedData = vectorOfExtractedData.get(currPos);
+        getData(testExtractedData);
+        defaultListModel.addElement(testExtractedData);
+        currPos++;
+        while( currPos <vectorOfExtractedData.size() && testExtractedData.distanceToSeed < 2)
         {
-            listModel.clear();                               //clear the old contents if any
-            listModel = new ListModel(forURLS.nextElement(),listOfUrls, vectorOfExtractedData);     
-            displayList.setModel(listModel);
-        }
+            testExtractedData = vectorOfExtractedData.get(currPos);
+            getData(testExtractedData);
+            defaultListModel.addElement(testExtractedData);
+            currPos++;
+        }     
     }
 
-    void initilize()
+    void getData(ExtractedData testExtracteData)
     {
-        String urlString;                       //to get URL text from textfield
-        listModel.clear();                          //clear the old contents if any
-        urlString = textField.getText().trim();     //stores the text from the textfield
-        listModel = new ListModel(urlString,listOfUrls,vectorOfExtractedData);     
-        displayList.setModel(listModel);
-
-        listOfUrls.addElement(urlString);   //puts the seed in the list of URLS
-
-        ExtractedData extractedData;
-        extractedData = new ExtractedData(urlString);
-        vectorOfExtractedData.addElement(extractedData);    //puts our first HREF seed into our vector of Extracted data
+        try
+        {
+            url = new URL(testExtracteData.link);
+            urlConnection = url.openConnection();
+            isr = new InputStreamReader(urlConnection.getInputStream());
+            tagHandler = new TagHandler(testExtracteData,vectorOfExtractedData);  
+            new ParserDelegator().parse(isr, tagHandler, true);
+        }
+        catch (MalformedURLException e) 
+        {
+        //    JOptionPane.showMessageDialog(null, "URL is malformed! " + url);
+            
+        }
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        }
     }
 }

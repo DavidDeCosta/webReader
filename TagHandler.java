@@ -7,51 +7,66 @@ import javax.swing.text.html.HTML.Tag;
 
 public class TagHandler extends HTMLEditorKit.ParserCallback
 {
-    String baseDomain;
-    int testingnum = 0;
-
-    Vector<String> listOfUrls;
-    Vector<String> listOfEmailAdresses;
-    Vector <ExtractedData> vectorOfExtractedData = new Vector<ExtractedData>();
-
-
-    TagHandler(String baseDomain, Vector<String> listOfUrls,Vector<String> listOfEmailAdresses, Vector <ExtractedData> vectorOfExtractedData)
-    {
-        this.baseDomain = baseDomain;
-        this.listOfUrls = listOfUrls;
-        this.listOfEmailAdresses = listOfEmailAdresses;
-        this.vectorOfExtractedData = vectorOfExtractedData;
-    }
+    ExtractedData passedInExtractedDataObject;
+    Vector <ExtractedData> vectorOfExtractedData;
+    int distance;
 
     TagHandler()
     {
 
     }
-    
+    TagHandler(ExtractedData passedInExtractedDataObject, Vector <ExtractedData> vectorOfExtractedData)
+    {
+        this.passedInExtractedDataObject = passedInExtractedDataObject;
+        this.vectorOfExtractedData = vectorOfExtractedData;
+        this.distance = passedInExtractedDataObject.distanceToSeed +1;
+    }
+
+
     @Override
     public void handleStartTag(Tag t, MutableAttributeSet a, int pos) 
     {
-
+        //if the tag is not a mailTO then try to create an Extracted Data object and add it to the list
+        boolean found= false;
         String mailTo = (String) a.getAttribute(HTML.Attribute.HREF);          //to check if the href starts with mailto:
         Object attribute;
         attribute = a.getAttribute(HTML.Attribute.HREF);
         if(attribute != null)
         {
-            if(!mailTo.startsWith("mailto:") )                //makes sure the mailto's arent added to our urllist
+            if(!mailTo.startsWith("mailto:") )                //makes sure the mailto's arent added to our url list
             {
-                listOfUrls.addElement(attribute.toString());
-            }
-            else
-            {
-              //  listOfEmailAdresses.addElement(mailTo);
+                int n = 0;
+                while(!found && n < vectorOfExtractedData.size())
+                {
+                    if(attribute.toString().equals(vectorOfExtractedData.get(n).link))
+                    {
+                        found = true;
+                    }
+                    else
+                    {
+                        n++;
+                    }
+                }
+                if(!found)
+                { 
+                    ExtractedData extractedData;
+                    extractedData = new ExtractedData(attribute.toString(), passedInExtractedDataObject.link,distance);
+                    vectorOfExtractedData.addElement(extractedData);
+                }
             }
         }
-
+        else
+        {
+        //  System.out.println("im in the else of the mailto forloop \n");         
+        }
     }
+        
+    
 
     @Override
     public void handleText(char[] data,int po)
     {
+        //if you find an email in the text add the email to the passedInExtractedDataObject
         String str;
         str = new String(data);
         String regExString = "[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})";
@@ -65,9 +80,11 @@ public class TagHandler extends HTMLEditorKit.ParserCallback
         {
             if(matcher.find())
             {
-              //  System.out.println("Found " + str.substring(matcher.start(),matcher.end()) + " ");
-                listOfEmailAdresses.add(str.substring(matcher.start(),matcher.end()));
+                passedInExtractedDataObject.emailList.add(str.substring(matcher.start(),matcher.end()));
+                System.out.println("Found Email: " + str.substring(matcher.start(),matcher.end()) +
+                " at the URL: " + passedInExtractedDataObject.link);
                 matcher.region(matcher.end(), str.length());
+                
             }
             else
             {
@@ -75,4 +92,5 @@ public class TagHandler extends HTMLEditorKit.ParserCallback
             }
         }
     }
+
 }
