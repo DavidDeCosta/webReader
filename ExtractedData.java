@@ -34,7 +34,7 @@ public class ExtractedData
     public String toString()
     {
         String formattedString;
-        formattedString = "************************************************ \n" + link  + emailList;
+        formattedString = "<html><br>************************************************ <br>" + link +"<br>" + emailList;
 
         return formattedString;
     }

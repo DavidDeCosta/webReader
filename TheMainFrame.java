@@ -1,7 +1,6 @@
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.text.html.parser.ParserDelegator;
-
 import java.awt.event.*;    //for ActionListener
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,6 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Vector;
+import java.util.Date;
 
 
 public class TheMainFrame  extends JFrame
@@ -23,15 +23,16 @@ public class TheMainFrame  extends JFrame
     JPanel panel;
     JButton button;
     ListModel defaultListModel;
-
     URL url;
     BufferedReader pageReader;
     URLConnection urlConnection;
     InputStreamReader isr;
     TagHandler tagHandler;
-
     Vector <ExtractedData> vectorOfExtractedData = new Vector<ExtractedData>();
 
+    Date date;
+    long timeMilli;
+    boolean expansionTimeLimit = false;
 
     TheMainFrame()
     {
@@ -69,7 +70,6 @@ public class TheMainFrame  extends JFrame
         panel.add(textField);
         panel.add(button);
 
-
     }
 
     @Override
@@ -77,6 +77,8 @@ public class TheMainFrame  extends JFrame
     {
         if(e.getActionCommand().equals(("Go!")))
         {
+            date = new Date();
+            timeMilli = date.getTime();
             crawl();
         }
         else
@@ -85,7 +87,7 @@ public class TheMainFrame  extends JFrame
         }
     }
 
-    void initilize()
+    void initialize()
     {
         //Get the original Link and create an Extracted Data object out of it and add it to the list 
         String urlString;
@@ -98,7 +100,7 @@ public class TheMainFrame  extends JFrame
 
     void crawl()
     {
-        initilize();
+        initialize();
         defaultListModel = new ListModel(vectorOfExtractedData);
         displayJList.setModel(defaultListModel);
         ExtractedData testExtractedData;
