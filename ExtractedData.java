@@ -46,11 +46,11 @@ public class ExtractedData
         {
             for(int j = 0; j < emailList.size(); j++)
             {
-                if(emailList.get(i).compareTo(emailList.get(j)) < 0)
+                if(emailList.get(i).compareTo(emailList.get(j)) < 0)  //if the email at index i is less than the email at index j
                 {
-                    temp = emailList.get(i);
-                    emailList.set(i, emailList.get(j));
-                    emailList.set(j, temp);
+                    temp = emailList.get(i);                 //temp holds the email at index i
+                    emailList.set(i, emailList.get(j));     //set the email at index i to the email at index j
+                    emailList.set(j, temp);                 //set the email at index j to the email at index i (which is now in temp)
                 }
             }
         }

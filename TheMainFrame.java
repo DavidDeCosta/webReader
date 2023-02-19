@@ -103,6 +103,7 @@ public class TheMainFrame  extends JFrame
 
     void crawl()
     {
+
         initialize();
         defaultListModel = new ListModel(vectorOfExtractedData);
         displayJList.setModel(defaultListModel);
@@ -111,6 +112,8 @@ public class TheMainFrame  extends JFrame
         //Get the ExtractedData object out of the list to parse
         int currPos = 0;
         testExtractedData = vectorOfExtractedData.get(currPos);
+ //       String urlString;
+ //       urlString = testExtractedData.link;
         getData(testExtractedData);
         defaultListModel.addElement(testExtractedData);
         currPos++;
@@ -119,9 +122,20 @@ public class TheMainFrame  extends JFrame
             testExtractedData = vectorOfExtractedData.get(currPos);
             getData(testExtractedData);
             duration = endTime - startTime; //get the duration
-            defaultListModel.addElement(testExtractedData);
+          //  defaultListModel.addElement(testExtractedData);
             currPos++;
-        }     
+        }
+        
+
+        int i = 0;
+        startTime = System.currentTimeMillis();      //start the timer
+        while(i < vectorOfExtractedData.size() && (duration < TimeUnit.SECONDS.toMillis(9)))
+        {
+            endTime = System.currentTimeMillis(); //stop the timer
+            duration = endTime - startTime; //get the duration
+            defaultListModel.addElement(vectorOfExtractedData.get(i));
+            i++;
+        }
     }
 
     void getData(ExtractedData testExtracteData)
@@ -166,17 +180,17 @@ public class TheMainFrame  extends JFrame
             }
             catch (IOException e2) 
             {
-                e1.printStackTrace();
+             //   e1.printStackTrace();
             }        
             }
             catch (IOException e1) 
             {
-                e1.printStackTrace();
+              //  e1.printStackTrace();
             }
         }
         catch (IOException e) 
         {
-            e.printStackTrace();
+         //   e.printStackTrace();
         }
     }
 }

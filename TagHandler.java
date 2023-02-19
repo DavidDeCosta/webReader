@@ -93,6 +93,8 @@ public class TagHandler extends HTMLEditorKit.ParserCallback
         }
     }
 
+
+    /*
     void sortVectorOfExtractedData()
     {
         ExtractedData temp;
@@ -109,5 +111,5 @@ public class TagHandler extends HTMLEditorKit.ParserCallback
             }
         }
     }
-
+     */
 }
